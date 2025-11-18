@@ -1,0 +1,2 @@
+# kos
+strona dla kosu
