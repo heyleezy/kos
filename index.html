@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zgrupowanie KOS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+            color: #1e3c72;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        nav {
+            background-color: #2a5298;
+            padding: 0.8rem 0;
+        }
+
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin: 0 1rem;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        nav ul li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .main-content {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .sidebar {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            color: #1e3c72;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .post-form textarea {
+            width: 100%;
+            height: 120px;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .image-upload-container {
+            margin-bottom: 1rem;
+            border: 2px dashed #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            text-align: center;
+            transition: border-color 0.3s;
+        }
+
+        .image-upload-container:hover {
+            border-color: #1e3c72;
+        }
+
+        .image-upload-container.dragover {
+            border-color: #1e3c72;
+            background-color: #f0f7ff;
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,255,255,0.8);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .post-form button {
+            background-color: #1e3c72;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .post-form button:hover {
+            background-color: #2a5298;
+        }
+
+        .post {
+            border-bottom: 1px solid #eee;
+            padding: 1rem 0;
+        }
+
+        .post:last-child {
+            border-bottom: none;
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .post-author {
+            font-weight: bold;
+            color: #1e3c72;
+        }
+
+        .post-date {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .post-content {
+            margin-bottom: 0.5rem;
+        }
+
+        .post-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .post-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .post-image:hover {
+            transform: scale(1.03);
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .post-actions button {
+            background: none;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .post-actions button:hover {
+            color: #1e3c72;
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1001;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            background-color: #1e3c72;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .login-btn:hover {
+            background-color: #2a5298;
+        }
+
+        .admin-bar {
+            background-color: #28a745;
+            color: white;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .login-required {
+            text-align: center;
+            padding: 1rem;
+            color: #777;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background-color: #1e3c72;
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            nav ul li {
+                margin: 0.3rem 0;
+            }
+
+            .post-image {
+                max-width: 150px;
+                max-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo-container">
+        <div class="logo">KOS</div>
+        <div>
+            <h1>Zgrupowanie KOS</h1>
+            <p class="tagline">Wspólnota, współpraca, rozwój</p>
+        </div>
+    </div>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="#">Strona główna</a></li>
+        <li><a href="#">O nas</a></li>
+        <li><a href="#">Aktualności</a></li>
+        <li><a href="#">Galeria</a></li>
+        <li><a href="#">Kontakt</a></li>
+    </ul>
+</nav>
+
+<div id="adminBar" class="admin-bar" style="display: none;">
+    <span>Zalogowany jako: <strong id="adminName">Administrator</strong></span>
+    <button class="logout-btn" id="logoutBtn">Wyloguj</button>
+</div>
+
+<div class="container">
+    <main class="main-content">
+        <div class="card">
+            <h2>Dodaj nowy post</h2>
+            <div id="loginRequired" class="login-required">
+                <p>Aby dodać post, musisz się zalogować jako administrator.</p>
+                <button id="loginBtn" class="login-btn" style="width: auto; margin-top: 10px;">Zaloguj się</button>
+            </div>
+            <form class="post-form" id="postForm" style="display: none;">
+                <textarea id="postContent" placeholder="Podziel się swoimi przemyśleniami..."></textarea>
+
+                <div class="image-upload-container" id="imageUploadContainer">
+                    <p>Przeciągnij zdjęcia tutaj lub kliknij, aby wybrać</p>
+                    <input type="file" id="imageInput" multiple accept="image/*" style="display: none;">
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+
+                <button type="submit">Opublikuj post</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Najnowsze posty</h2>
+            <div id="postsContainer">
+            </div>
+        </div>
+    </main>
+
+    <aside class="sidebar">
+        <div class="card">
+            <h2>O Zgrupowaniu</h2>
+            <p>Zgrupowanie KOS to społeczność zrzeszająca osoby o wspólnych celach i wartości.</p>
+        </div>
+
+        <div class="card">
+            <h2>Nadchodzące wydarzenia</h2>
+            <ul>
+                <li>Spotkanie organizacyjne - 15.10.2023</li>
+                <li>Warsztaty rozwoju osobistego - 22.10.2023</li>
+                <li>Wycieczka integracyjna - 29.10.2023</li>
+            </ul>
+        </div>
+    </aside>
+</div>
+
+<div class="image-modal" id="imageModal">
+    <span class="close-modal" id="closeModal">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+
+<div class="login-modal" id="loginModal">
+    <div class="login-form">
+        <h2>Logowanie administratora</h2>
+        <form id="adminLoginForm">
+            <div class="form-group">
+                <label for="username">Nazwa użytkownika</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Hasło</label>
+                <input type="password" id="password" required>
+            </div>
+            <button type="submit" class="login-btn">Zaloguj</button>
+            <p id="loginError" style="color: red; margin-top: 10px; display: none;">Błędne dane logowania!</p>
+        </form>
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2023 Zgrupowanie KOS.</p>
+</footer>
+
+<script>
+    const API_BASE = 'api/';
+    let selectedImages = [];
+    let isLoggedIn = false;
+
+    const imageUploadContainer = document.getElementById('imageUploadContainer');
+    const imageInput = document.getElementById('imageInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const imageModal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const closeModal = document.getElementById('closeModal');
+    const loginModal = document.getElementById('loginModal');
+    const adminLoginForm = document.getElementById('adminLoginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adminBar = document.getElementById('adminBar');
+    const postForm = document.getElementById('postForm');
+    const loginRequired = document.getElementById('loginRequired');
+    const loginError = document.getElementById('loginError');
+
+    // Funkcje API
+    async function apiRequest(endpoint, options = {}) {
+        const response = await fetch(API_BASE + endpoint, {
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            },
+            ...options
+        });
+
+        return await response.json();
+    }
+
+    // Sprawdź status logowania
+    async function checkLoginStatus() {
+        try {
+            const result = await apiRequest('check_session.php');
+            if (result.logged_in) {
+                isLoggedIn = true;
+                showAdminInterface();
+                document.getElementById('adminName').textContent = result.username;
+            } else {
+                isLoggedIn = false;
+                hideAdminInterface();
+            }
+        } catch (error) {
+            console.error('Błąd podczas sprawdzania sesji:', error);
+            isLoggedIn = false;
+            hideAdminInterface();
+        }
+    }
+
+    // Logowanie
+    async function login(username, password) {
+        try {
+            const result = await apiRequest('login.php', {
+                method: 'POST',
+                body: JSON.stringify({ username, password })
+            });
+
+            if (result.success) {
+                isLoggedIn = true;
+                showAdminInterface();
+                document.getElementById('adminName').textContent = result.username;
+                loginModal.style.display = 'none';
+                loginError.style.display = 'none';
+                return true;
+            } else {
+                loginError.style.display = 'block';
+                return false;
+            }
+        } catch (error) {
+            console.error('Błąd logowania:', error);
+            loginError.style.display = 'block';
+            return false;
+        }
+    }
+
+    // Wylogowanie
+    async function logout() {
+        try {
+            await apiRequest('logout.php');
+            isLoggedIn = false;
+            hideAdminInterface();
+        } catch (error) {
+            console.error('Błąd wylogowania:', error);
+        }
+    }
+
+    // Pobierz posty
+    async function getPosts() {
+        try {
+            const posts = await apiRequest('posts.php');
+            return posts;
+        } catch (error) {
+            console.error('Błąd pobierania postów:', error);
+            return [];
+        }
+    }
+
+    // Dodaj post
+    async function addPost(content, images = []) {
+        try {
+            const result = await apiRequest('posts.php', {
+                method: 'POST',
+                body: JSON.stringify({ content, images })
+            });
+            return result;
+        } catch (error) {
+            console.error('Błąd dodawania posta:', error);
+            throw error;
+        }
+    }
+
+    // Polub post
+    async function likePost(postId) {
+        try {
+            await apiRequest('posts.php', {
+                method: 'PUT',
+                body: JSON.stringify({ post_id: postId })
+            });
+        } catch (error) {
+            console.error('Błąd polubienia:', error);
+        }
+    }
+
+    // Usuń post
+    async function deletePost(postId) {
+        try {
+            await apiRequest(`posts.php?id=${postId}`, {
+                method: 'DELETE'
+            });
+            return true;
+        } catch (error) {
+            console.error('Błąd usuwania:', error);
+            return false;
+        }
+    }
+
+    // Prześlij zdjęcie
+    async function uploadImage(file) {
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await fetch(API_BASE + 'upload_image.php', {
+                method: 'POST',
+                body: formData
+            });
+            return await response.json();
+        } catch (error) {
+            console.error('Błąd przesyłania zdjęcia:', error);
+            throw error;
+        }
+    }
+
+    // Pokaż interfejs administratora
+    function showAdminInterface() {
+        adminBar.style.display = 'flex';
+        postForm.style.display = 'block';
+        loginRequired.style.display = 'none';
+    }
+
+    // Ukryj interfejs administratora
+    function hideAdminInterface() {
+        adminBar.style.display = 'none';
+        postForm.style.display = 'none';
+        loginRequired.style.display = 'block';
+    }
+
+    // Obsługa przesyłania zdjęć
+    imageUploadContainer.addEventListener('click', () => {
+        if (!isLoggedIn) {
+            loginModal.style.display = 'flex';
+            return;
+        }
+        imageInput.click();
+    });
+
+    imageUploadContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        imageUploadContainer.classList.add('dragover');
+    });
+
+    imageUploadContainer.addEventListener('dragleave', () => {
+        imageUploadContainer.classList.remove('dragover');
+    });
+
+    imageUploadContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        imageUploadContainer.classList.remove('dragover');
+        if (!isLoggedIn) {
+            loginModal.style.display = 'flex';
+            return;
+        }
+        const files = e.dataTransfer.files;
+        handleImageFiles(files);
+    });
+
+    imageInput.addEventListener('change', (e) => {
+        const files = e.target.files;
+        handleImageFiles(files);
+    });
+
+    function handleImageFiles(files) {
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    selectedImages.push({
+                        name: file.name,
+                        data: e.target.result
+                    });
+                    updateImagePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    }
+
+    function updateImagePreview() {
+        imagePreview.innerHTML = '';
+        selectedImages.forEach((image, index) => {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'image-preview-item';
+            previewItem.innerHTML = `
+                    <img src="${image.data}" alt="Podgląd">
+                    <button class="remove-image" data-index="${index}">×</button>
+                `;
+            imagePreview.appendChild(previewItem);
+        });
+
+        document.querySelectorAll('.remove-image').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const index = parseInt(button.getAttribute('data-index'));
+                selectedImages.splice(index, 1);
+                updateImagePreview();
+            });
+        });
+    }
+
+    // Wyświetl posty
+    async function displayPosts() {
+        const postsContainer = document.getElementById('postsContainer');
+        const posts = await getPosts();
+
+        if (posts.length === 0) {
+            postsContainer.innerHTML = '<p>Brak postów do wyświetlenia.</p>';
+            return;
+        }
+
+        posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        postsContainer.innerHTML = '';
+
+        posts.forEach(post => {
+            const postElement = document.createElement('div');
+            postElement.className = 'post';
+
+            const postDate = new Date(post.created_at);
+            const formattedDate = `${postDate.toLocaleDateString('pl-PL')} ${postDate.toLocaleTimeString('pl-PL', {hour: '2-digit', minute: '2-digit'})}`;
+
+            let imagesHTML = '';
+            if (post.images && post.images.length > 0) {
+                imagesHTML = '<div class="post-images">';
+                post.images.forEach((img, index) => {
+                    imagesHTML += `<img src="${img}" alt="Zdjęcie w poście" class="post-image" data-post-id="${post.id}" data-image-index="${index}">`;
+                });
+                imagesHTML += '</div>';
+            }
+
+            postElement.innerHTML = `
+                    <div class="post-header">
+                        <span class="post-author">${post.author}</span>
+                        <span class="post-date">${formattedDate}</span>
+                    </div>
+                    <div class="post-content">${post.content}</div>
+                    ${imagesHTML}
+                    <div class="post-actions">
+                        <button class="like-btn" data-id="${post.id}">
+                            <span>👍</span> <span class="like-count">${post.likes || 0}</span>
+                        </button>
+                        ${isLoggedIn ? `<button class="delete-btn" data-id="${post.id}">Usuń</button>` : ''}
+                    </div>
+                `;
+
+            postsContainer.appendChild(postElement);
+        });
+
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const postId = this.getAttribute('data-id');
+                likePost(postId);
+                setTimeout(() => displayPosts(), 100);
+            });
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', async function() {
+                const postId = this.getAttribute('data-id');
+                if (confirm("Czy na pewno chcesz usunąć ten post?")) {
+                    await deletePost(postId);
+                    await displayPosts();
+                }
+            });
+        });
+
+        document.querySelectorAll('.post-image').forEach(img => {
+            img.addEventListener('click', function() {
+                const postId = this.getAttribute('data-post-id');
+                const imageIndex = this.getAttribute('data-image-index');
+                openImageModal(postId, imageIndex);
+            });
+        });
+    }
+
+    async function handleAddPost(content) {
+        if (!isLoggedIn) {
+            loginModal.style.display = 'flex';
+            return;
+        }
+
+        try {
+            const imagePaths = [];
+            for (const image of selectedImages) {
+                const response = await fetch(image.data);
+                const blob = await response.blob();
+                const file = new File([blob], image.name, { type: blob.type });
+
+                const uploadResult = await uploadImage(file);
+                if (uploadResult.success) {
+                    imagePaths.push(uploadResult.filepath);
+                }
+            }
+
+            await addPost(content, imagePaths);
+
+            document.getElementById('postContent').value = '';
+            selectedImages = [];
+            updateImagePreview();
+
+            await displayPosts();
+
+        } catch (error) {
+            alert('Błąd podczas dodawania posta: ' + error.message);
+        }
+    }
+
+    function openImageModal(postId, imageIndex) {
+        const postsContainer = document.getElementById('postsContainer');
+        const postImages = postsContainer.querySelector(`[data-post-id="${postId}"]`);
+        if (postImages) {
+            const img = postImages.querySelector(`[data-image-index="${imageIndex}"]`);
+            if (img) {
+                modalImage.src = img.src;
+                imageModal.style.display = 'flex';
+            }
+        }
+    }
+
+    closeModal.addEventListener('click', () => {
+        imageModal.style.display = 'none';
+    });
+
+    imageModal.addEventListener('click', (e) => {
+        if (e.target === imageModal) {
+            imageModal.style.display = 'none';
+        }
+    });
+
+    // Obsługa logowania
+    loginBtn.addEventListener('click', () => {
+        loginModal.style.display = 'flex';
+    });
+
+    adminLoginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        await login(username, password);
+    });
+
+    // Obsługa wylogowania
+    logoutBtn.addEventListener('click', async () => {
+        await logout();
+    });
+
+    // Zamknij modal logowania
+    loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) {
+            loginModal.style.display = 'none';
+            loginError.style.display = 'none';
+        }
+    });
+
+    // Obsługa formularza posta
+    document.getElementById('postForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const content = document.getElementById('postContent').value.trim();
+
+        if (content || selectedImages.length > 0) {
+            await handleAddPost(content);
+        } else {
+            alert('Proszę dodać treść lub zdjęcie!');
+        }
+    });
+
+    // Inicjalizacja
+    document.addEventListener('DOMContentLoaded', async () => {
+        await checkLoginStatus();
+        await displayPosts();
+    });
+</script>
+</body>
+</html>
